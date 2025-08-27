@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Voice Portfolio Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Particles.js CDN -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0f0c29;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      z-index: 1;
+    }
+
+    .content-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    #chatbox {
+      background: #0f3460;
+      width: 100%;
+      height: 500px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+
+    #messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin: 10px 0;
+    }
+
+    .user {
+      text-align: right;
+      color: #00f5d4;
+    }
+
+    .bot {
+      text-align: left;
+      color: #fff;
+    }
+
+    .input-area {
+      display: flex;
+      background: #16213e;
+      padding: 10px;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .input-area button, #voice-btn {
+      margin-left: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #00f5d4;
+      color: black;
+      cursor: pointer;
+    }
+
+    #contact-form {
+      background: #0f3460;
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+    }
+
+    #contact-form h3 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    #contact-form input, #contact-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #contact-form button {
+      background: #00f5d4;
+      color: #000;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Particle background -->
+<div id="particles-js"></div>
+
+<!-- Main chatbot content -->
+<div class="content-container">
+  <h1>🎤 My Chatbot Assistant</h1>
+  <button id="voice-btn">🎙️ Start Voice Assistant</button>
+
+  <div id="chatbox">
+    <div id="messages"></div>
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Type a message..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <!-- Contact form -->
+  <div id="contact-form">
+    <h3>Contact Me</h3>
+    <form action="https://formspree.io/f/xvgrdaqk" method="POST">
+      <input type="email" name="email" placeholder="Your Email" required />
+      <textarea name="message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>
+
+<!-- JavaScript for chatbot and particles -->
+<script>
+  const introText = `I'm a Frontend Focused Web Developer, Graphic Designer, and Researcher. I build and manage the Front-end of Websites and Web Applications that lead to the success of the overall product. Check out my work in the Projects section. I love sharing content on Web Development. Follow me on LinkedIn and Instagram. I'm open to Job opportunities where I can learn and grow.`;
+
+  const messages = document.getElementById("messages");
+  const input = document.getElementById("user-input");
+  const sendBtn = document.getElementById("send-btn");
+
+  function addMessage(text, sender) {
+    const msg = document.createElement("div");
+    msg.className = `message ${sender}`;
+    msg.innerText = text;
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function speakText(text) {
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
+    window.speechSynthesis.speak(speech);
+  }
+
+  function handleBotResponse(userText) {
+    const text = userText.toLowerCase();
+    let reply = "Sorry, I didn’t understand that. Try asking something else.";
+
+    if (text.includes("introduce") || text.includes("yourself") || text.includes("about you")) {
+      reply = introText;
+      speakText(reply);
+    } else if (text.includes("hello") || text.includes("hi") || text.includes("hii")) {
+      reply = "Hello! I'm your personal portfolio assistant. You can ask me to introduce myself or know how to contact me.";
+    } else if (text.includes("what can you do")) {
+      reply = "I can introduce myself, help you explore my skills, and connect you through email.";
+    } else if (text.includes("contact") || text.includes("email")) {
+      reply = "You can contact me using the form below.";
+    } else if (text.includes("bye")) {
+      reply = "Goodbye! Have a great day!";
+    }
+
+    addMessage(reply, "bot");
+  }
+
+  function sendMessage() {
+    const userText = input.value.trim();
+    if (!userText) return;
+    addMessage(userText, "user");
+    input.value = "";
+    handleBotResponse(userText);
+  }
+
+  sendBtn.addEventListener("click", sendMessage);
+  input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  });
+
+  // ✅ Voice Assistant (untouched as per your request)
+  document.getElementById("voice-btn").addEventListener("click", () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Sorry, your browser does not support voice input.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.start();
+
+    recognition.onstart = () => addMessage("Listening...", "bot");
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      addMessage(transcript, "user");
+      handleBotResponse(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      addMessage("Voice error: " + event.error, "bot");
+    };
+  });
+
+  // 🔷 Particle background configuration
+  particlesJS("particles-js", {
+    "particles": {
+      "number": { "value": 60 },
+      "color": { "value": "#00f5d4" },
+      "shape": { "type": "circle" },
+      "opacity": { "value": 0.5 },
+      "size": { "value": 3 },
+      "line_linked": {
+        "enable": true,
+        "distance": 150,
+        "color": "#00f5d4",
+        "opacity": 0.4,
+        "width": 1
+      },
+      "move": {
+        "enable": true,
+        "speed": 3,
+        "direction": "none",
+        "out_mode": "bounce"
+      }
+    },
+    "interactivity": {
+      "events": {
+        "onhover": { "enable": true, "mode": "grab" },
+        "onclick": { "enable": true, "mode": "push" }
+      },
+      "modes": {
+        "grab": { "distance": 200, "line_linked": { "opacity": 1 } },
+        "push": { "particles_nb": 4 }
+      }
+    },
+    "retina_detect": true
+  });
+</script>
+
+</body>
+</html>
